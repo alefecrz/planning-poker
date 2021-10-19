@@ -1,22 +1,23 @@
 import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import cors from 'cors';
 
-import routes from './router';
+import SocketController from './app/controllers/socketController';
 
 class App {
     constructor() {
-        this.server = express();
+        this.app = express();
+        this.server = createServer(this.app);
+        this.httpConnection = createServer();
+        this.socketHandler = new Server(this.server);
         this.middlewares();
-        this.routes();
+        this.socketController = new SocketController(this.socketHandler);
     }
 
     middlewares() {
-        this.server.use(express.json());
-        this.server.use(cors());
-    }
-
-    routes() {
-        this.server.use(routes);
+        this.app.use(express.json());
+        this.app.use(cors());
     }
 }
 
